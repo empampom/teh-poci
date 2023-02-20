@@ -1,0 +1,149 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Carbon\Carbon;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class TransaksiController extends Controller
+{
+    public function home()
+    {
+        $list_cabang = DB::table('cabang')->orderBy('nama')->get();
+
+        return view('index', compact('list_cabang'));
+    }
+
+    public function index($cabang_id)
+    {
+        $list_menu = DB::table('menu')->orderBy('harga')->orderBy('id')->get();
+        $list_pembayaran = DB::table('pembayaran')->get();
+
+        return view('transaksi', compact('cabang_id', 'list_menu', 'list_pembayaran'));
+    }
+
+    public function store(Request $request, $cabang_id)
+    {
+        $pesanan = $request->pesanan;
+        $pembayaran = $request->pembayaran;
+
+        $pecah_tanggal = Carbon::parse(now());
+        $tahun = $pecah_tanggal->isoFormat('YYYY');
+        $bulan = $pecah_tanggal->isoFormat('MM');
+
+        $urutan_max = DB::table('transaksi')->where('cabang_id', $cabang_id)->whereYear('tgl_jam', $tahun)->whereMonth('tgl_jam', $bulan)->max('urutan');
+        $urutan = $urutan_max + 1;
+
+        $kode_kuitansi = DB::table('cabang')->where('id', $cabang_id)->value('kode');
+
+        $kode_sub = Str::of($urutan)->padLeft(4, '0');
+        $kode = $kode_kuitansi . "/" . $tahun . "/" . $bulan . "/" . $kode_sub;
+
+        $data_pesanan = array();
+        $data_pembayaran = array();
+
+        DB::beginTransaction();
+        try {
+            $id = DB::table('transaksi')->insertGetId([
+                'created_at' => now(),
+                'created_by' => auth()->user()->id,
+                'cabang_id' => $cabang_id,
+                'tgl_jam' => now(),
+                'urutan' => $urutan,
+                'kode' => $kode
+            ]);
+
+            $tagihan = 0;
+            foreach ($pesanan as $key_pesanan => $val_pesanan) {
+                $harga = DB::table('menu')->where('id', $key_pesanan)->value('harga');
+                $total = $val_pesanan * $harga;
+                $tagihan += $total;
+
+                $data_pesanan[] = [
+                    'created_at' => now(),
+                    'created_by' => auth()->user()->id,
+                    'transaksi_id' => $id,
+                    'menu_id' => $key_pesanan,
+                    'jumlah' => $val_pesanan,
+                    'harga' => $harga,
+                    'total' => $total
+                ];
+            }
+            if (count($data_pesanan) > 0) {
+                DB::table('transaksi_detail')->insert($data_pesanan);
+            }
+
+            $bayar = 0;
+            foreach ($pembayaran as $key_pembayaran => $val_pembayaran) {
+                if (!empty($val_pembayaran) || $val_pembayaran > 0) {
+                    $bayaran = Str::replace('.', '', $val_pembayaran);
+                    $bayar += $bayaran;
+
+                    $data_pembayaran[] = [
+                        'created_at' => now(),
+                        'created_by' => auth()->user()->id,
+                        'transaksi_id' => $id,
+                        'pembayaran_id' => $key_pembayaran,
+                        'nominal' => $bayaran
+                    ];
+                }
+            }
+            if (count($data_pembayaran) > 0) {
+                DB::table('transaksi_bayar')->insert($data_pembayaran);
+            }
+
+            $kembali = $bayar - $tagihan;
+            DB::table('transaksi')
+                ->where('id', $id)
+                ->update([
+                    'tagihan' => $tagihan,
+                    'bayar' => $bayar,
+                    'kembali' => $kembali
+                ]);
+
+            if ($kembali < 0) {
+                DB::rollBack();
+                return redirect()->route('transaksi.index', ['cabang_id' => $cabang_id])->with('status', ['error', 'Jumlah Pembayaran Kurang']);
+            } else {
+                DB::commit();
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+
+        return redirect()->route('transaksi.print', ['cabang_id' => $cabang_id, 'id' => $id])->with('status', ['success', 'Data Berhasil di Tambahkan']);
+    }
+
+    public function print($cabang_id, $id)
+    {
+        $bill = DB::table('transaksi')
+            ->join('cabang', 'transaksi.cabang_id', '=', 'cabang.id')
+            ->select([
+                'transaksi.kode',
+                'transaksi.tgl_jam',
+                'transaksi.tagihan',
+                'transaksi.bayar',
+                'transaksi.kembali',
+                'cabang.nama',
+                'cabang.alamat'
+            ])
+            ->where('transaksi.id', $id)
+            ->first();
+
+        $list_transaksi = DB::table('transaksi_detail')
+            ->join('menu', 'transaksi_detail.menu_id', '=', 'menu.id')
+            ->select([
+                'menu.nama AS nama_menu',
+                'transaksi_detail.jumlah AS jumlah_pesan',
+                'transaksi_detail.harga AS harga_satuan',
+                'transaksi_detail.total AS total_pesan'
+            ])
+            ->where('transaksi_detail.transaksi_id', $id)
+            ->get();
+
+        return view('transaksi_cetak', compact('cabang_id', 'bill', 'list_transaksi'));
+    }
+}
