@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/laporan', [LaporanController::class, 'result'])->name('laporan.result');
 });
 
+
 Route::get('login', [AuthController::class, 'LoginForm'])->name('login');
 Route::post('login', [AuthController::class, 'LoginAction'])->name('login.action');
 Route::get('/', [TransaksiController::class, 'home'])->name('transaksi.home');
