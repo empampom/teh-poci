@@ -37,7 +37,8 @@ class LaporanController extends Controller
                             transaksi.id,
                             transaksi.tgl_jam,
                             transaksi.kode,
-                            transaksi.tagihan
+                            transaksi.tagihan,
+                            transaksi.diskon
                         FROM
                             transaksi
                         JOIN cabang ON
@@ -76,7 +77,7 @@ class LaporanController extends Controller
             $query =   "SELECT
                             cabang.nama AS nama_cabang,
                             pembayaran.nama AS nama_bayar,
-                            sum(transaksi.tagihan) AS total_bayar
+                            sum(transaksi.tagihan) - sum(transaksi.diskon) AS total_bayar
                         FROM
                             transaksi
                         JOIN cabang ON

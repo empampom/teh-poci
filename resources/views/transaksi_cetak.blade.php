@@ -31,6 +31,10 @@
             <td class="text-end border-top border-dark border-3 fw-bold">{{ number_format($bill->tagihan, 0, '.', ',') }}</td>
         </tr>
         <tr>
+            <td colspan="3" class="text-end">Diskon</td>
+            <td class="text-end">{{ number_format($bill->diskon, 0, '.', ',') }}</td>
+        </tr>
+        <tr>
             <td colspan="3" class="text-end">Pembayaran</td>
             <td class="text-end">{{ number_format($bill->bayar, 0, '.', ',') }}</td>
         </tr>

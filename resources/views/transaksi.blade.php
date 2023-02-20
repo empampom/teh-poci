@@ -6,15 +6,16 @@
             @foreach ($list_menu as $menu)
                 @php
                     $gambar = 'gambar_menu/' . $menu->gambar;
+                    $harga = $menu->harga_beda ?? $menu->harga_asli;
                 @endphp
                 <div class="col-4 m-0 p-1">
                     <div class="card">
                         <img src="{{ asset($gambar) }}" class="card-img-top">
                         <div class="card-body text-center pt-0">
-                            <strong>{{ number_format($menu->harga, 0, '.', ',') }}</strong>
+                            <strong>{{ number_format($harga, 0, '.', ',') }}</strong>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text text-white fw-bold bg-success" id="kurang-{{ $menu->id }}" data-target="jumlah-{{ $menu->id }}" onclick="kurangPesanan(this)">-</span>
-                                <input type="number" class="form-control jumlah-pesanan" name="jumlah[{{ $menu->id }}]" id="jumlah-{{ $menu->id }}" data-id="{{ $menu->id }}" data-nama="{{ $menu->nama }}" data-harga="{{ $menu->harga }}" value="0" readonly>
+                                <input type="number" class="form-control jumlah-pesanan" name="jumlah[{{ $menu->id }}]" id="jumlah-{{ $menu->id }}" data-id="{{ $menu->id }}" data-nama="{{ $menu->nama }}" data-harga="{{ $harga }}" value="0" readonly>
                                 <span class="input-group-text text-white fw-bold bg-success" id="tambah-{{ $menu->id }}" data-target="jumlah-{{ $menu->id }}" onclick="tambahPesanan(this)">+</span>
                             </div>
                         </div>
@@ -28,7 +29,7 @@
                 <form action="{{ route('transaksi.store', ['cabang_id' => $cabang_id]) }}" method="post" autocomplete="off" id="form-transaksi">
                     @csrf
                     <table class="table table-striped my-1" id="tabel-pesanan"></table>
-                    <table class="my-1 float-end" id="tabel-bayar">
+                    <table class="mt-1 float-end" id="tabel-bayar">
                         @foreach ($list_pembayaran as $pembayaran)
                             <tr>
                                 <td class="text-end p-2">{{ $pembayaran->nama }}</td>
@@ -37,6 +38,19 @@
                                 </td>
                             </tr>
                         @endforeach
+                    </table>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <table class="my-1 float-end" id="tabel-diskon">
+                        <tr>
+                            <td class="text-end p-2">Diskon</td>
+                            <td>
+                                <input type="text" inputmode="numeric" class="form-control form-control-sm m-0 p-0 number-separator text-end fw-bold" name="diskon">
+                            </td>
+                        </tr>
                     </table>
                 </form>
                 <br>
@@ -99,10 +113,12 @@
                 list += "<tr class='fw-bold'>" + "<td colspan='3' class='text-center'>Total</td>" + "<td class='text-end'>" + nominal(grand_total) + "</td>" + "</tr>";
                 document.getElementById("judul-pesan").style.display = "block";
                 document.getElementById("tabel-bayar").style.display = "block";
+                document.getElementById("tabel-diskon").style.display = "block";
                 document.getElementById("tombol-pesan").style.display = "block";
             } else {
                 document.getElementById("judul-pesan").style.display = "none";
                 document.getElementById("tabel-bayar").style.display = "none";
+                document.getElementById("tabel-diskon").style.display = "none";
                 document.getElementById("tombol-pesan").style.display = "none";
             }
             document.getElementById("tabel-pesanan").innerHTML = list;

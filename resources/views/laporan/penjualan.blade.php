@@ -17,15 +17,18 @@
                     <th>Jam</th>
                     <th>Kode</th>
                     <th>Detail</th>
+                    <th>Diskon</th>
                     <th>Bill</th>
                 </tr>
             </thead>
             <tbody>
                 @php
+                    $diskon_total = 0;
                     $grand_total = 0;
                 @endphp
                 @foreach ($list_penjualan as $val_penjualan)
                     @php
+                        $diskon_total += $val_penjualan->diskon;
                         $grand_total += $val_penjualan->tagihan;
                     @endphp
                     <tr>
@@ -45,6 +48,7 @@
                                 @endforeach
                             </ol>
                         </td>
+                        <td class="text-end">{{ number_format($val_penjualan->diskon, 0, '.', ',') }}</td>
                         <td class="text-end">{{ number_format($val_penjualan->tagihan, 0, '.', ',') }}</td>
                     </tr>
                 @endforeach
@@ -56,6 +60,7 @@
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td class="fw-bold text-center">Total</td>
+                <td class="fw-bold text-end">{{ number_format($diskon_total, 0, '.', ',') }}</td>
                 <td class="fw-bold text-end">{{ number_format($grand_total, 0, '.', ',') }}</td>
             </tr>
         </table>

@@ -3,18 +3,26 @@
 @section('content')
     <div class="card">
         <div class="card-header">
-            <strong>Pengaturan Menu</strong>
+            <strong>Pengaturan Harga Beda</strong>
         </div>
         <div class="card-body">
-            <form action="{{ route('menu.store') }}" method="post" enctype="multipart/form-data">
+            <form action="{{ route('beda_harga.store') }}" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
-                    <label for="nama" class="form-label">Nama Menu</label>
-                    <input type="text" class="form-control" id="nama" name="nama">
+                    <label for="cabang" class="form-label">Cabang</label>
+                    <select class="form-select" id="cabang" name="cabang_id">
+                        @foreach ($list_cabang as $cabang)
+                            <option value="{{ $cabang->id }}">{{ $cabang->nama }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="mb-3">
-                    <label for="gambar" class="form-label">Gambar</label>
-                    <input class="form-control" type="file" id="gambar" name="gambar">
+                    <label for="menu" class="form-label">Menu</label>
+                    <select class="form-select" id="menu" name="menu_id">
+                        @foreach ($list_menu as $menu)
+                            <option value="{{ $menu->id }}">{{ $menu->nama }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label for="harga" class="form-label">Harga</label>
@@ -22,33 +30,29 @@
                 </div>
                 <div class="d-flex justify-content-between">
                     <button type="submit" class="btn btn-sm btn-primary">Submit</button>
-                    <a href="{{ route('beda_harga.index') }}" class="btn btn-sm btn-warning">Beda Harga</a>
                 </div>
             </form>
         </div>
     </div>
 
-    @if (count($list_menu) > 0)
+    @if (count($list_beda_harga) > 0)
         <div class="card mt-2">
             <div class="card-body">
-                <h2 class="text-center">List Menu</h2>
+                <h2 class="text-center">List Harga Beda</h2>
                 <table class="table table-striped table-bordered align-middle">
                     <tr class="text-center">
                         <th>#</th>
-                        <th>Gambar</th>
-                        <th>Nama</th>
-                        <th>Harga Default</th>
+                        <th>Cabang</th>
+                        <th>Menu</th>
+                        <th>Harga</th>
                         <th>Action</th>
                     </tr>
-                    @foreach ($list_menu as $menu)
-                        @php
-                            $gambar = 'gambar_menu/' . $menu->gambar;
-                        @endphp
+                    @foreach ($list_beda_harga as $beda_harga)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td class="text-center"><img src="{{ asset($gambar) }}" style="height:100px"></td>
-                            <td>{{ $menu->nama }}</td>
-                            <td class="text-end">{{ number_format($menu->harga, 0, '.', ',') }}</td>
+                            <td>{{ $beda_harga->nama_cabang }}</td>
+                            <td>{{ $beda_harga->nama_menu }}</td>
+                            <td class="text-end">{{ number_format($beda_harga->harga_beda, 0, '.', ',') }}</td>
                             <td class="text-center">
                                 <a href="" class="btn btn-sm btn-warning">Edit</a>
                                 <a href="" class="btn btn-sm btn-danger">Hapus</a>

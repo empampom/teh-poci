@@ -18,7 +18,25 @@ class TransaksiController extends Controller
 
     public function index($cabang_id)
     {
-        $list_menu = DB::table('menu')->orderBy('harga')->orderBy('id')->get();
+        $query   = "SELECT
+                        menu.id,
+                        menu.gambar,
+                        menu.nama,
+                        menu.harga AS harga_asli,
+                        subquery.harga AS harga_beda
+                    FROM
+                        menu
+                    LEFT JOIN (
+                        SELECT
+                            menu_id,
+                            harga
+                        FROM
+                            beda_harga
+                        WHERE
+                            cabang_id = $cabang_id) subquery ON
+                        menu.id = subquery.menu_id";
+        $list_menu = DB::select(DB::raw($query));
+
         $list_pembayaran = DB::table('pembayaran')->get();
 
         return view('transaksi', compact('cabang_id', 'list_menu', 'list_pembayaran'));
@@ -28,6 +46,7 @@ class TransaksiController extends Controller
     {
         $pesanan = $request->pesanan;
         $pembayaran = $request->pembayaran;
+        $diskon = Str::replace('.', '', $request->diskon);
 
         $pecah_tanggal = Carbon::parse(now());
         $tahun = $pecah_tanggal->isoFormat('YYYY');
@@ -57,7 +76,12 @@ class TransaksiController extends Controller
 
             $tagihan = 0;
             foreach ($pesanan as $key_pesanan => $val_pesanan) {
-                $harga = DB::table('menu')->where('id', $key_pesanan)->value('harga');
+                $harga_beda = DB::table('beda_harga')->where('cabang_id', $cabang_id)->where('menu_id', $key_pesanan)->value('harga');
+                if (empty($harga_beda)) {
+                    $harga = DB::table('menu')->where('id', $key_pesanan)->value('harga');
+                } else {
+                    $harga = $harga_beda;
+                }
                 $total = $val_pesanan * $harga;
                 $tagihan += $total;
 
@@ -94,11 +118,12 @@ class TransaksiController extends Controller
                 DB::table('transaksi_bayar')->insert($data_pembayaran);
             }
 
-            $kembali = $bayar - $tagihan;
+            $kembali = $bayar + $diskon - $tagihan;
             DB::table('transaksi')
                 ->where('id', $id)
                 ->update([
                     'tagihan' => $tagihan,
+                    'diskon' => $diskon,
                     'bayar' => $bayar,
                     'kembali' => $kembali
                 ]);
@@ -125,6 +150,7 @@ class TransaksiController extends Controller
                 'transaksi.kode',
                 'transaksi.tgl_jam',
                 'transaksi.tagihan',
+                'transaksi.diskon',
                 'transaksi.bayar',
                 'transaksi.kembali',
                 'cabang.nama',

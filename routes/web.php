@@ -6,6 +6,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\CabangController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PenggunaController;
+use App\Http\Controllers\BedaHargaController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\PembayaranController;
 
@@ -19,10 +20,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/pembayaran/store', [PembayaranController::class, 'store'])->name('pembayaran.store');
     Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
     Route::post('/menu/store', [MenuController::class, 'store'])->name('menu.store');
+    Route::get('/beda-harga', [BedaHargaController::class, 'index'])->name('beda_harga.index');
+    Route::post('/beda-harga/store', [BedaHargaController::class, 'store'])->name('beda_harga.store');
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::post('/laporan', [LaporanController::class, 'result'])->name('laporan.result');
 });
-
 
 Route::get('login', [AuthController::class, 'LoginForm'])->name('login');
 Route::post('login', [AuthController::class, 'LoginAction'])->name('login.action');
