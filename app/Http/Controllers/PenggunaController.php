@@ -9,8 +9,8 @@ class PenggunaController extends Controller
 {
     public function index()
     {
-        $list_pengguna = DB::table('pengguna')->get();
-        $list_cabang = DB::table('cabang')->get();
+        $list_pengguna = DB::table('pengguna')->whereNull('deleted_at')->get();
+        $list_cabang = DB::table('cabang')->whereNull('deleted_at')->get();
 
         return view('pengguna', compact('list_pengguna', 'list_cabang'));
     }
@@ -33,5 +33,14 @@ class PenggunaController extends Controller
         ]);
 
         return redirect()->route('pengguna.index')->with('status', ['success', 'Data Berhasil di Tambahkan']);
+    }
+
+    public function edit(Request $request)
+    {
+        $id = $request->id;
+
+        $pengguna = DB::table('pengguna')->where('id', $id)->first();
+
+        return $pengguna;
     }
 }

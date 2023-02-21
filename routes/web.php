@@ -14,6 +14,7 @@ Route::middleware('auth')->group(function () {
     Route::view('/admin', 'admin')->name('admin.index');
     Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna.index');
     Route::post('/pengguna/store', [PenggunaController::class, 'store'])->name('pengguna.store');
+    Route::post('/pengguna/edit', [PenggunaController::class, 'edit'])->name('pengguna.edit');
     Route::get('/cabang', [CabangController::class, 'index'])->name('cabang.index');
     Route::post('/cabang/store', [CabangController::class, 'store'])->name('cabang.store');
     Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
