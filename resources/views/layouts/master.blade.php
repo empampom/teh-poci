@@ -37,7 +37,7 @@
             })
         </script>
     @endif
-    @stack('scripts')
+    @stack('scripts') 
 </body>
 
 </html>
