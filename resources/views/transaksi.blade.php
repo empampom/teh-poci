@@ -29,29 +29,32 @@
                 <form action="{{ route('transaksi.store', ['cabang_id' => $cabang_id]) }}" method="post" autocomplete="off" id="form-transaksi">
                     @csrf
                     <table class="table table-striped my-1" id="tabel-pesanan"></table>
-                    <table class="mt-1 float-end" id="tabel-bayar">
-                        @foreach ($list_pembayaran as $pembayaran)
-                            <tr>
-                                <td class="text-end p-2">{{ $pembayaran->nama }}</td>
-                                <td>
-                                    <input type="text" inputmode="numeric" class="form-control form-control-sm m-0 p-0 number-separator text-end fw-bold" name="pembayaran[{{ $pembayaran->id }}]">
-                                </td>
-                            </tr>
-                        @endforeach
-                    </table>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <table class="my-1 float-end" id="tabel-diskon">
-                        <tr>
-                            <td class="text-end p-2">Diskon</td>
-                            <td>
-                                <input type="text" inputmode="numeric" class="form-control form-control-sm m-0 p-0 number-separator text-end fw-bold" name="diskon">
-                            </td>
-                        </tr>
-                    </table>
+                    <div class="row">
+                        <div class="col-12">
+                            <table class="mt-1 float-end" id="tabel-bayar">
+                                @foreach ($list_pembayaran as $pembayaran)
+                                    <tr>
+                                        <td class="text-end p-2">{{ $pembayaran->nama }}</td>
+                                        <td>
+                                            <input type="text" inputmode="numeric" class="form-control form-control-sm m-0 p-0 number-separator text-end fw-bold" name="pembayaran[{{ $pembayaran->id }}]">
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <table class="my-1 float-end" id="tabel-diskon">
+                                <tr>
+                                    <td class="text-end p-2">Diskon</td>
+                                    <td>
+                                        <input type="text" inputmode="numeric" class="form-control form-control-sm m-0 p-0 number-separator text-end fw-bold" name="diskon">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </form>
                 <br>
             </div>

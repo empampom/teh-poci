@@ -11,7 +11,12 @@ class TransaksiController extends Controller
 {
     public function home()
     {
-        $list_cabang = DB::table('cabang')->orderBy('nama')->get();
+        $cabang_akses = auth()->user()->cabang;
+        if ($cabang_akses == 'all') {
+            $list_cabang = DB::table('cabang')->whereNull('deleted_at')->orderBy('id')->get();
+        } else {
+            $list_cabang = DB::table('cabang')->whereIn('id', [$cabang_akses])->whereNull('deleted_at')->orderBy('id')->get();
+        }
 
         return view('index', compact('list_cabang'));
     }
@@ -22,6 +27,10 @@ class TransaksiController extends Controller
                         menu.id,
                         menu.gambar,
                         menu.nama,
+                        CASE
+                            WHEN subquery.harga IS NOT NULL THEN subquery.harga
+                            ELSE menu.harga
+                        END AS harga,
                         menu.harga AS harga_asli,
                         subquery.harga AS harga_beda
                     FROM
@@ -33,11 +42,17 @@ class TransaksiController extends Controller
                         FROM
                             beda_harga
                         WHERE
-                            cabang_id = $cabang_id) subquery ON
-                        menu.id = subquery.menu_id";
+                            cabang_id = $cabang_id
+                            AND deleted_at IS NULL) subquery ON
+                        menu.id = subquery.menu_id
+                    WHERE
+                        deleted_at IS NULL
+                    ORDER BY
+                        harga,
+                        nama";
         $list_menu = DB::select(DB::raw($query));
 
-        $list_pembayaran = DB::table('pembayaran')->get();
+        $list_pembayaran = DB::table('pembayaran')->whereNull('deleted_at')->get();
 
         return view('transaksi', compact('cabang_id', 'list_menu', 'list_pembayaran'));
     }
@@ -47,6 +62,7 @@ class TransaksiController extends Controller
         $pesanan = $request->pesanan;
         $pembayaran = $request->pembayaran;
         $diskon = Str::replace('.', '', $request->diskon);
+        $diskon = $diskon == '' ? 0 : $diskon;
 
         $pecah_tanggal = Carbon::parse(now());
         $tahun = $pecah_tanggal->isoFormat('YYYY');
@@ -67,7 +83,7 @@ class TransaksiController extends Controller
         try {
             $id = DB::table('transaksi')->insertGetId([
                 'created_at' => now(),
-                'created_by' => auth()->user()->id,
+                'created_by' => auth()->user()->id ?? NULL,
                 'cabang_id' => $cabang_id,
                 'tgl_jam' => now(),
                 'urutan' => $urutan,
@@ -87,7 +103,7 @@ class TransaksiController extends Controller
 
                 $data_pesanan[] = [
                     'created_at' => now(),
-                    'created_by' => auth()->user()->id,
+                    'created_by' => auth()->user()->id ?? NULL,
                     'transaksi_id' => $id,
                     'menu_id' => $key_pesanan,
                     'jumlah' => $val_pesanan,
@@ -107,7 +123,7 @@ class TransaksiController extends Controller
 
                     $data_pembayaran[] = [
                         'created_at' => now(),
-                        'created_by' => auth()->user()->id,
+                        'created_by' => auth()->user()->id ?? NULL,
                         'transaksi_id' => $id,
                         'pembayaran_id' => $key_pembayaran,
                         'nominal' => $bayaran

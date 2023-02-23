@@ -16,7 +16,18 @@
 <body>
     <div class="container">
         <div class="text-center">
-            <a href="{{ isset(auth()->user()->akses) ? route('admin.index') : route('login') }}">
+            @php
+                if (isset(auth()->user()->akses)) {
+                    if (auth()->user()->akses == 'admin') {
+                        $halaman = route('admin.index');
+                    } else {
+                        $halaman = route('transaksi.home');
+                    }
+                } else {
+                    $halaman = route('login');
+                }
+            @endphp
+            <a href="{{ $halaman }}">
                 <img src="{{ asset('logo/teh_poci.png') }}" width="50px" class="p-0 my-2">
             </a>
         </div>
@@ -37,7 +48,7 @@
             })
         </script>
     @endif
-    @stack('scripts') 
+    @stack('scripts')
 </body>
 
 </html>
