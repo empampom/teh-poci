@@ -41,7 +41,7 @@
                     </div>
                     @foreach ($list_cabang as $cabang)
                         <div class="form-check satuan">
-                            <input class="form-check-input" type="checkbox" value="{{ $cabang->id }}" id="cabang_{{ $cabang->kode }}" name="cabang[]">
+                            <input class="form-check-input" type="checkbox" value="{{ $cabang->id }}" id="cabang_{{ $cabang->id }}" name="cabang[]">
                             <label class="form-check-label" for="cabang_{{ $cabang->kode }}">
                                 {{ $cabang->nama }}
                             </label>

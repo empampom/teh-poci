@@ -17,17 +17,17 @@
     <div class="container">
         <div class="text-center">
             @php
-                if (isset(auth()->user()->akses)) {
-                    if (auth()->user()->akses == 'admin') {
-                        $halaman = route('admin.index');
-                    } else {
-                        $halaman = route('transaksi.home');
-                    }
-                } else {
-                    $halaman = route('login');
-                }
+                // if (isset(auth()->user()->akses)) {
+                //     if (auth()->user()->akses == 'admin') {
+                //         $halaman = route('admin.index');
+                //     } else {
+                //         $halaman = route('transaksi.home');
+                //     }
+                // } else {
+                //     $halaman = route('login');
+                // }
             @endphp
-            <a href="{{ $halaman }}">
+            <a href="{{ route('admin.index') }}">
                 <img src="{{ asset('logo/teh_poci.png') }}" width="50px" class="p-0 my-2">
             </a>
         </div>

@@ -6,7 +6,7 @@
             @foreach ($list_menu as $menu)
                 @php
                     $gambar = 'gambar_menu/' . $menu->gambar;
-                    $harga = $menu->harga_beda ?? $menu->harga_asli;
+                    $harga = $menu->harga;
                 @endphp
                 <div class="col-4 m-0 p-1">
                     <div class="card">

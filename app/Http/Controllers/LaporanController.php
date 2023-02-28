@@ -10,7 +10,12 @@ class LaporanController extends Controller
 {
     public function index()
     {
-        $list_cabang = DB::table('cabang')->orderBy('nama')->get();
+        $cabang_akses = explode(",", auth()->user()->cabang);
+        if ($cabang_akses[0] == 'all') {
+            $list_cabang = DB::table('cabang')->whereNull('deleted_at')->orderBy('id')->get();
+        } else {
+            $list_cabang = DB::table('cabang')->whereIn('id', $cabang_akses)->whereNull('deleted_at')->orderBy('id')->get();
+        }
 
         return view('laporan', compact('list_cabang'));
     }

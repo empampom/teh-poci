@@ -19,7 +19,9 @@
                 <div class="mb-3">
                     <label for="cabang_id" class="form-label">Cabang</label>
                     <select name="cabang_id" class="form-select" id="cabang_id">
-                        <option value="all">Semua Cabang</option>
+                        @if (auth()->user()->akses == 'admin')
+                            <option value="all">Semua Cabang</option>
+                        @endif
                         @foreach ($list_cabang as $cabang)
                             <option value="{{ $cabang->id }}">{{ $cabang->nama }}</option>
                         @endforeach

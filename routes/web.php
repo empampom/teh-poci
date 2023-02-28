@@ -10,9 +10,15 @@ use App\Http\Controllers\BedaHargaController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\PembayaranController;
 
+Route::get('login', [AuthController::class, 'LoginForm'])->name('login');
+Route::post('login', [AuthController::class, 'LoginAction'])->name('login.action');
+
 Route::middleware('auth')->group(function () {
-    Route::get('/', [TransaksiController::class, 'home'])->name('transaksi.home');
     Route::view('/admin', 'admin')->name('admin.index');
+    Route::get('/', [TransaksiController::class, 'home'])->name('transaksi.home');
+    Route::get('/trans/{cabang_id}', [TransaksiController::class, 'index'])->name('transaksi.index');
+    Route::post('/trans/{cabang_id}/store', [TransaksiController::class, 'store'])->name('transaksi.store');
+    Route::get('/trans/{cabang_id}/print/{id}', [TransaksiController::class, 'print'])->name('transaksi.print');
     Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna.index');
     Route::post('/pengguna/store', [PenggunaController::class, 'store'])->name('pengguna.store');
     Route::post('/pengguna/edit', [PenggunaController::class, 'edit'])->name('pengguna.edit');
@@ -41,9 +47,3 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::post('/laporan', [LaporanController::class, 'result'])->name('laporan.result');
 });
-
-Route::get('login', [AuthController::class, 'LoginForm'])->name('login');
-Route::post('login', [AuthController::class, 'LoginAction'])->name('login.action');
-Route::get('/{cabang_id}', [TransaksiController::class, 'index'])->name('transaksi.index');
-Route::post('/{cabang_id}/store', [TransaksiController::class, 'store'])->name('transaksi.store');
-Route::get('/{cabang_id}/print/{id}', [TransaksiController::class, 'print'])->name('transaksi.print');

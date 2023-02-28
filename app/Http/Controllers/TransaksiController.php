@@ -11,11 +11,11 @@ class TransaksiController extends Controller
 {
     public function home()
     {
-        $cabang_akses = auth()->user()->cabang;
-        if ($cabang_akses == 'all') {
+        $cabang_akses = explode(",", auth()->user()->cabang);
+        if ($cabang_akses[0] == 'all') {
             $list_cabang = DB::table('cabang')->whereNull('deleted_at')->orderBy('id')->get();
         } else {
-            $list_cabang = DB::table('cabang')->whereIn('id', [$cabang_akses])->whereNull('deleted_at')->orderBy('id')->get();
+            $list_cabang = DB::table('cabang')->whereIn('id', $cabang_akses)->whereNull('deleted_at')->orderBy('id')->get();
         }
 
         return view('index', compact('list_cabang'));

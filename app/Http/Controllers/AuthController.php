@@ -27,11 +27,7 @@ class AuthController extends Controller
             if (isset($cek_password)) {
                 if (empty($cek_password->deleted_at)) {
                     Auth::loginUsingId($cek_password->id);
-                    if ($cek_password->akses == 'admin') {
-                        return redirect()->route('admin.index');
-                    } else {
-                        return redirect()->route('transaksi.home');
-                    }
+                    return redirect()->route('admin.index');
                 } else {
                     return redirect()->route('login')->with('status', ['error', 'Akun tidak aktif']);
                 }
