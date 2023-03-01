@@ -92,7 +92,7 @@ class TransaksiController extends Controller
 
             $tagihan = 0;
             foreach ($pesanan as $key_pesanan => $val_pesanan) {
-                $harga_beda = DB::table('beda_harga')->where('cabang_id', $cabang_id)->where('menu_id', $key_pesanan)->value('harga');
+                $harga_beda = DB::table('beda_harga')->where('cabang_id', $cabang_id)->where('menu_id', $key_pesanan)->whereNull('deleted_at')->value('harga');
                 if (empty($harga_beda)) {
                     $harga = DB::table('menu')->where('id', $key_pesanan)->value('harga');
                 } else {
