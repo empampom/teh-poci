@@ -1,6 +1,5 @@
 <?php
 // ini zul
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
