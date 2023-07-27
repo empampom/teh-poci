@@ -5,34 +5,34 @@
         <div class="card-header">
             <strong>Pengaturan Cabang</strong>
             <button class="btn btn-sm btn-primary float-end btn-add" type="button">
-                Tambah
+                Tambah dong ini
             </button>
         </div>
         <div class="card-body collapse collapse-card">
-            <form action="" method="post" id="form_cabang">
+            <form id="form_cabang" action="" method="post">
                 @csrf
-                <input type="hidden" id="cabang_id" name="cabang_id">
+                <input id="cabang_id" name="cabang_id" type="hidden">
                 <div class="mb-3">
-                    <label for="nama" class="form-label">Nama Cabang</label>
-                    <input type="text" class="form-control" id="nama" name="nama">
+                    <label class="form-label" for="nama">Nama Cabang</label>
+                    <input class="form-control" id="nama" name="nama" type="text">
                 </div>
                 <div class="mb-3">
-                    <label for="lokasi" class="form-label">Lokasi</label>
-                    <input type="text" class="form-control" id="lokasi" name="lokasi">
+                    <label class="form-label" for="lokasi">Lokasi</label>
+                    <input class="form-control" id="lokasi" name="lokasi" type="text">
                 </div>
                 <div class="mb-3">
-                    <label for="alamat" class="form-label">Alamat</label>
-                    <input type="text" class="form-control" id="alamat" name="alamat">
+                    <label class="form-label" for="alamat">Alamat</label>
+                    <input class="form-control" id="alamat" name="alamat" type="text">
                 </div>
                 <div class="mb-3">
-                    <label for="telpon" class="form-label">Telpon</label>
-                    <input type="text" class="form-control" id="telpon" name="telpon">
+                    <label class="form-label" for="telpon">Telpon</label>
+                    <input class="form-control" id="telpon" name="telpon" type="text">
                 </div>
                 <div class="mb-3">
-                    <label for="kode" class="form-label">Kode</label>
-                    <input type="text" class="form-control" id="kode" name="kode">
+                    <label class="form-label" for="kode">Kode</label>
+                    <input class="form-control" id="kode" name="kode" type="text">
                 </div>
-                <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+                <button class="btn btn-sm btn-primary" type="submit">Submit</button>
             </form>
         </div>
     </div>
