@@ -1,5 +1,5 @@
 <?php
-
+// tambah apa kek ini
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
